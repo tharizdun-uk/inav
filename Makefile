@@ -265,7 +265,6 @@ COMMON_SRC = build_config.c \
 		   $(DEVICE_STDPERIPH_SRC)
 
 HIGHEND_SRC = \
-		   flight/gtune.c \
            flight/navigation_rewrite.c \
            flight/navigation_rewrite_multicopter.c \
            flight/navigation_rewrite_fixedwing.c \
@@ -439,7 +438,6 @@ CJMCU_SRC = \
 		   drivers/timer.c \
 		   drivers/timer_stm32f10x.c \
 		   hardware_revision.c \
-		   flight/gtune.c \
 		   blackbox/blackbox.c \
 		   blackbox/blackbox_io.c \
 		   $(COMMON_SRC)
