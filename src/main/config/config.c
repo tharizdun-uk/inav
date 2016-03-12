@@ -164,11 +164,11 @@ void resetPidProfile(pidProfile_t *pidProfile)
     pidProfile->I8[PIDALT] = 0;     // not used
     pidProfile->D8[PIDALT] = 0;     // not used
     pidProfile->P8[PIDPOS] = 65;    // NAV_POS_XY_P * 100
-    pidProfile->I8[PIDPOS] = 155;   // posDecelerationTime * 100
-    pidProfile->D8[PIDPOS] = 30;    // posResponseExpo * 100
-    pidProfile->P8[PIDPOSR] = 90;   // NAV_VEL_XY_P * 100
+    pidProfile->I8[PIDPOS] = 120;   // posDecelerationTime * 100
+    pidProfile->D8[PIDPOS] = 10;    // posResponseExpo * 100
+    pidProfile->P8[PIDPOSR] = 180;  // NAV_VEL_XY_P * 100
     pidProfile->I8[PIDPOSR] = 15;   // NAV_VEL_XY_I * 100
-    pidProfile->D8[PIDPOSR] = 0;    // NAV_VEL_XY_D * 100
+    pidProfile->D8[PIDPOSR] = 100;  // NAV_VEL_XY_D * 100
     pidProfile->P8[PIDNAVR] = 14;   // FW_NAV_P * 100
     pidProfile->I8[PIDNAVR] = 2;    // FW_NAV_I * 100
     pidProfile->D8[PIDNAVR] = 8;    // FW_NAV_D * 100
@@ -258,18 +258,19 @@ void resetNavConfig(navConfig_t * navConfig)
     navConfig->rth_altitude = 1000;         // 10m
 
     // MC-specific
-    navConfig->mc_max_bank_angle = 30;
+    navConfig->mc_max_bank_angle = 30;      // 30 deg
     navConfig->mc_hover_throttle = 1500;
     navConfig->mc_min_fly_throttle = 1200;
 
     // Fixed wing
-    navConfig->fw_max_bank_angle = 20;
-    navConfig->fw_max_climb_angle = 15;
+    navConfig->fw_max_bank_angle = 30;      // 30 deg
+    navConfig->fw_max_climb_angle = 20;
     navConfig->fw_max_dive_angle = 15;
     navConfig->fw_cruise_throttle = 1500;
     navConfig->fw_max_throttle = 1900;
     navConfig->fw_min_throttle = 1300;
     navConfig->fw_pitch_to_throttle = 20;
+    navConfig->fw_loiter_radius = 3000;     // 30m
 }
 #endif
 

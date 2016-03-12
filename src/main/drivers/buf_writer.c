@@ -15,28 +15,33 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <stdint.h>
 
-// Type of magnetometer used/detected
-typedef enum {
-    MAG_DEFAULT = 0,
-    MAG_NONE = 1,
-    MAG_HMC5883 = 2,
-    MAG_AK8975 = 3,
-    MAG_GPS = 4,
-    MAG_MAG3110 = 5,
-    MAG_FAKE = 6,
-} magSensor_e;
+#include "buf_writer.h"
 
-#define MAG_MAX  MAG_FAKE
+bufWriter_t *bufWriterInit(uint8_t *b, int total_size, bufWrite_t writer, void *arg)
+{
+    bufWriter_t *buf = (bufWriter_t *)b;
+    buf->writer = writer;
+    buf->arg = arg;
+    buf->at = 0;
+    buf->capacity = total_size - sizeof(*buf);
 
-#ifdef MAG
-void compassInit(void);
-void updateCompass(flightDynamicsTrims_t *magZero);
-bool isCompassReady(void);
-#endif
+    return buf;
+}
 
-extern int32_t magADC[XYZ_AXIS_COUNT];
+void bufWriterAppend(bufWriter_t *b, uint8_t ch)
+{
+    b->data[b->at++] = ch;
+    if (b->at >= b->capacity) {
+        bufWriterFlush(b);
+    }
+}
 
-extern sensor_align_e magAlign;
-extern mag_t mag;
+void bufWriterFlush(bufWriter_t *b)
+{
+    if (b->at != 0) {
+        b->writer(b->arg, b->data, b->at);
+        b->at = 0;
+    }
+}

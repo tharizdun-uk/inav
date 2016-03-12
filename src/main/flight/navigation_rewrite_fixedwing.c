@@ -198,17 +198,16 @@ static void calculateVirtualPositionTarget_FW(float trackingPeriod)
     // If angular visibility of a waypoint is less than 30deg, don't calculate circular loiter, go straight to the target
     #define TAN_15DEG    0.26795f
     bool needToCalculateCircularLoiter = isApproachingLastWaypoint()
-                                            && (distanceToActualTarget <= (posControl.navConfig->waypoint_radius / TAN_15DEG))
+                                            && (distanceToActualTarget <= (posControl.navConfig->fw_loiter_radius / TAN_15DEG))
                                             && (distanceToActualTarget > 50.0f);
 
     // Calculate virtual position for straight movement
     if (needToCalculateCircularLoiter) {
         // We are closing in on a waypoint, calculate circular loiter
-        float loiterRadius = posControl.navConfig->waypoint_radius * 0.9f;
         float loiterAngle = atan2_approx(-posErrorY, -posErrorX) + DEGREES_TO_RADIANS(45.0f);
 
-        float loiterTargetX = posControl.desiredState.pos.V.X + loiterRadius * cos_approx(loiterAngle);
-        float loiterTargetY = posControl.desiredState.pos.V.Y + loiterRadius * sin_approx(loiterAngle);
+        float loiterTargetX = posControl.desiredState.pos.V.X + posControl.navConfig->fw_loiter_radius * cos_approx(loiterAngle);
+        float loiterTargetY = posControl.desiredState.pos.V.Y + posControl.navConfig->fw_loiter_radius * sin_approx(loiterAngle);
 
         // We have temporary loiter target. Recalculate distance and position error
         posErrorX = loiterTargetX - posControl.actualState.pos.V.X;
@@ -392,11 +391,20 @@ void applyFixedWingNavigationController(navigationFSMStateFlags_t navStateFlags,
         applyFixedWingEmergencyLandingController();
     }
     else {
-        if (navStateFlags & NAV_CTL_ALT)
-            applyFixedWingAltitudeController(currentTime);
+        // Don't apply anything if ground speed is too low (<3m/s)
+        float forwardVelocitySquared = sq(posControl.actualState.vel.V.X) + sq(posControl.actualState.vel.V.Y);
+        if (forwardVelocitySquared > (300 * 300)) {
+            if (navStateFlags & NAV_CTL_ALT)
+                applyFixedWingAltitudeController(currentTime);
 
-        if (navStateFlags & NAV_CTL_POS)
-            applyFixedWingPositionController(currentTime);
+            if (navStateFlags & NAV_CTL_POS)
+                applyFixedWingPositionController(currentTime);
+        }
+        else {
+            posControl.rcAdjustment[PITCH] = 0;
+            posControl.rcAdjustment[ROLL] = 0;
+            posControl.rcAdjustment[THROTTLE] = 0;
+        }
 
         //if (navStateFlags & NAV_CTL_YAW)
         if ((navStateFlags & NAV_CTL_ALT) || (navStateFlags & NAV_CTL_POS))

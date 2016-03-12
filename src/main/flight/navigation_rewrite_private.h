@@ -54,10 +54,14 @@ typedef struct navigationFlags_s {
     bool hasValidAltitudeSensor;        // Indicates that we have a working altitude sensor (got at least one valid reading from it)
     bool hasValidPositionSensor;        // Indicates that GPS is working (or not)
     bool hasValidSurfaceSensor;
+    bool hasValidHeadingSensor;         // Indicate valid heading - wither mag or GPS at certain speed on airplane
 
     bool isAdjustingPosition;
     bool isAdjustingAltitude;
     bool isAdjustingHeading;
+
+    // Behaviour modifiers
+    bool isGCSAssistedNavigationEnabled;    // Does iNav accept WP#255 - follow-me etc.
 
     bool forcedRTHActivated;
 } navigationFlags_t;
