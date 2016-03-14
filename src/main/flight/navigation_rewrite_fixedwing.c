@@ -195,10 +195,10 @@ static void calculateVirtualPositionTarget_FW(float trackingPeriod)
     // Limit minimum forward velocity to 1 m/s
     float trackingDistance = trackingPeriod * MAX(forwardVelocity, 100.0f);
 
-    // If angular visibility of a waypoint is less than 30deg, don't calculate circular loiter, go straight to the target
-    #define TAN_15DEG    0.26795f
+    // If angular visibility of a waypoint is less than 20deg, don't calculate circular loiter, go straight to the target
+    #define TAN_10DEG    0.17633f
     bool needToCalculateCircularLoiter = isApproachingLastWaypoint()
-                                            && (distanceToActualTarget <= (posControl.navConfig->fw_loiter_radius / TAN_15DEG))
+                                            && (distanceToActualTarget <= (posControl.navConfig->fw_loiter_radius / TAN_10DEG))
                                             && (distanceToActualTarget > 50.0f);
 
     // Calculate virtual position for straight movement
